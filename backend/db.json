@@ -1,0 +1,35 @@
+{
+  "orders": [
+    {
+      "id": "5e07",
+      "orderNumber": "SCU-1765335232869-169",
+      "customerName": "Santiago Cisneros",
+      "phone": "3103504084",
+      "email": "santiagocisneros046@gmail.com",
+      "address": "Carrera 4 #20b 05, Miradores dell Bosque ",
+      "notes": "",
+      "orderDate": "2025-12-10T02:54:05.970Z",
+      "status": "Pendiente",
+      "paymentMethod": "nequi",
+      "total": 125000,
+      "products": [
+        {
+          "id": 1,
+          "name": "Estampada Classic S",
+          "size": "S",
+          "price": 55000,
+          "quantity": 1,
+          "subtotal": 55000
+        },
+        {
+          "id": 14,
+          "name": "Oversize Premium",
+          "size": "M",
+          "price": 70000,
+          "quantity": 1,
+          "subtotal": 70000
+        }
+      ]
+    }
+  ]
+}

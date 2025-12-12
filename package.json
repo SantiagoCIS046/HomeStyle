@@ -6,12 +6,12 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "dev:frontend": "npm run dev --prefix sc-styleurban/frontend",
-    "dev:backend": "npm run dev --prefix sc-styleurban/backend",
-    "build": "npm run build --prefix sc-styleurban/frontend",
-    "start": "node sc-styleurban/backend/server.js",
-    "install:all": "npm install --prefix sc-styleurban/frontend && npm install --prefix sc-styleurban/backend",
-    "vercel-build": "npm install --prefix sc-styleurban/frontend && npm install --prefix sc-styleurban/backend && npm run build --prefix sc-styleurban/frontend"
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "build": "npm run build --prefix frontend",
+    "start": "node backend/server.js",
+    "install:all": "npm install --prefix frontend && npm install --prefix backend",
+    "vercel-build": "npm install --prefix frontend && npm install --prefix backend && npm run build --prefix frontend"
   },
   "keywords": [
     "ecommerce",
@@ -27,4 +27,3 @@
     "concurrently": "^8.2.2"
   }
 }
-

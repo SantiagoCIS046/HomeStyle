@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "cd sc-styleurban/frontend && npm install && npm run build",
-  "outputDirectory": "sc-styleurban/frontend/dist",
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
   "installCommand": "npm install",
   "framework": null,
   "rewrites": [
