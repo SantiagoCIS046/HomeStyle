@@ -20,248 +20,146 @@
     </div>
 
     <div class="payment-content">
-      <!-- Order Info -->
-      <div class="order-info">
-        <h2>Información del Pedido</h2>
-        <div class="info-card">
+      <!-- Purchase Summary Card (Black) -->
+      <div class="purchase-summary-card">
+        <div class="summary-header">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path
+              d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"
+            ></path>
+          </svg>
+          <h2>Resumen de Compra</h2>
+        </div>
+
+        <div class="summary-content">
+          <!-- Order Info -->
           <div class="info-row">
-            <span class="label">Número de Pedido:</span>
+            <span class="label">Pedido #</span>
             <span class="value">{{ orderNumber }}</span>
           </div>
           <div class="info-row">
-            <span class="label">Total a Pagar:</span>
-            <span class="value total">{{
-              formatPrice(cartStore.totalPrice)
-            }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">Cliente:</span>
+            <span class="label">Cliente</span>
             <span class="value">{{ customerData.name }}</span>
+          </div>
+
+          <!-- Divider -->
+          <div class="divider"></div>
+
+          <!-- Products List -->
+          <div class="products-list">
+            <div
+              v-for="item in cartStore.cartItems"
+              :key="`${item.id}-${item.size}`"
+              class="product-item"
+            >
+              <span class="product-name"
+                >{{ item.name }} ({{ item.size }})</span
+              >
+              <span class="product-quantity">x{{ item.quantity }}</span>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="divider"></div>
+
+          <!-- Tax Breakdown -->
+          <div class="tax-row">
+            <span class="label">Subtotal (Base)</span>
+            <span class="value">{{ formatPrice(subtotal) }}</span>
+          </div>
+          <div class="tax-row">
+            <span class="label">IVA (19%)</span>
+            <span class="value">{{ formatPrice(iva) }}</span>
+          </div>
+          <div class="tax-row">
+            <span class="label">INC/ICO (8%)</span>
+            <span class="value">{{ formatPrice(inc) }}</span>
+          </div>
+
+          <!-- Divider -->
+          <div class="divider"></div>
+
+          <!-- Total -->
+          <div class="total-row">
+            <span class="label">Total a Pagar</span>
+            <span class="value">{{ formatPrice(total) }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Payment Methods -->
-      <div class="payment-methods">
-        <h2>Selecciona tu Método de Pago</h2>
-
-        <div class="payment-options">
-          <!-- Bancolombia -->
-          <div
-            class="payment-option"
-            :class="{ selected: selectedMethod === 'bancolombia' }"
-            @click="selectMethod('bancolombia')"
-          >
-            <div class="option-header">
-              <div class="option-icon bancolombia-icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                  <line x1="1" y1="10" x2="23" y2="10"></line>
-                </svg>
-              </div>
-              <div class="option-info">
-                <h3>Bancolombia</h3>
-                <p>Tarjeta de Crédito o Débito</p>
-              </div>
-              <div class="radio-check">
-                <div
-                  class="radio"
-                  :class="{ checked: selectedMethod === 'bancolombia' }"
-                ></div>
-              </div>
-            </div>
-
-            <div v-if="selectedMethod === 'bancolombia'" class="option-details">
-              <form @submit.prevent class="payment-form">
-                <!-- Card Type Selection -->
-                <div class="form-group">
-                  <label>Tipo de Tarjeta *</label>
-                  <div class="card-type-selector">
-                    <label class="card-type-option">
-                      <input
-                        type="radio"
-                        v-model="bancolombiaData.cardType"
-                        value="credito"
-                        required
-                      />
-                      <span>Crédito</span>
-                    </label>
-                    <label class="card-type-option">
-                      <input
-                        type="radio"
-                        v-model="bancolombiaData.cardType"
-                        value="debito"
-                        required
-                      />
-                      <span>Débito</span>
-                    </label>
-                  </div>
-                </div>
-
-                <!-- Card Number -->
-                <div class="form-group">
-                  <label for="cardNumber">Número de Tarjeta *</label>
-                  <input
-                    type="text"
-                    id="cardNumber"
-                    v-model="bancolombiaData.cardNumber"
-                    @input="formatCardNumber"
-                    placeholder="1234 5678 9012 3456"
-                    maxlength="19"
-                    required
-                  />
-                  <span v-if="cardBrand" class="card-brand">{{
-                    cardBrand
-                  }}</span>
-                </div>
-
-                <!-- Cardholder Name -->
-                <div class="form-group">
-                  <label for="cardName">Nombre del Titular *</label>
-                  <input
-                    type="text"
-                    id="cardName"
-                    v-model="bancolombiaData.cardName"
-                    placeholder="Como aparece en la tarjeta"
-                    required
-                  />
-                </div>
-
-                <!-- Expiry and CVV -->
-                <div class="form-row">
-                  <div class="form-group">
-                    <label for="expiryDate">Fecha de Vencimiento *</label>
-                    <input
-                      type="text"
-                      id="expiryDate"
-                      v-model="bancolombiaData.expiryDate"
-                      @input="formatExpiryDate"
-                      placeholder="MM/AA"
-                      maxlength="5"
-                      required
-                    />
-                  </div>
-                  <div class="form-group">
-                    <label for="cvv">CVV *</label>
-                    <input
-                      type="text"
-                      id="cvv"
-                      v-model="bancolombiaData.cvv"
-                      @input="formatCVV"
-                      placeholder="123"
-                      maxlength="4"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <!-- Amount Display -->
-                <div class="amount-display">
-                  <span>Monto a Pagar:</span>
-                  <strong>{{ formatPrice(cartStore.totalPrice) }}</strong>
-                </div>
-              </form>
-            </div>
+      <!-- Payment Method Card (White) -->
+      <div class="payment-method-card">
+        <div class="epayco-header">
+          <div class="epayco-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+              <line x1="2" y1="10" x2="22" y2="10"></line>
+            </svg>
           </div>
-
-          <!-- Nequi -->
-          <div
-            class="payment-option"
-            :class="{ selected: selectedMethod === 'nequi' }"
-            @click="selectMethod('nequi')"
-          >
-            <div class="option-header">
-              <div class="option-icon nequi-icon">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path
-                    d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-                  ></path>
-                </svg>
-              </div>
-              <div class="option-info">
-                <h3>Nequi</h3>
-                <p>Dinero Electrónico</p>
-              </div>
-              <div class="radio-check">
-                <div
-                  class="radio"
-                  :class="{ checked: selectedMethod === 'nequi' }"
-                ></div>
-              </div>
-            </div>
-
-            <div v-if="selectedMethod === 'nequi'" class="option-details">
-              <form @submit.prevent class="payment-form">
-                <!-- Phone Number -->
-                <div class="form-group">
-                  <label for="nequiPhone">Número de Celular Nequi *</label>
-                  <input
-                    type="tel"
-                    id="nequiPhone"
-                    v-model="nequiData.phoneNumber"
-                    @input="formatPhoneNumber"
-                    placeholder="300 123 4567"
-                    maxlength="12"
-                    required
-                  />
-                  <small class="help-text"
-                    >Ingresa tu número de celular registrado en Nequi</small
-                  >
-                </div>
-
-                <!-- Amount Display -->
-                <div class="amount-display">
-                  <span>Monto a Pagar:</span>
-                  <strong>{{ formatPrice(cartStore.totalPrice) }}</strong>
-                </div>
-
-                <!-- Nequi Info -->
-                <div class="nequi-info">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                  </svg>
-                  <p>
-                    Recibirás una notificación en tu app Nequi para aprobar el
-                    pago.
-                  </p>
-                </div>
-              </form>
-            </div>
+          <div class="epayco-info">
+            <h3>Pago Seguro con ePayco</h3>
+            <p>Múltiples métodos de pago disponibles</p>
           </div>
         </div>
 
+        <!-- Payment Methods Grid -->
+        <div class="payment-methods-grid">
+          <div class="method-item">
+            <span class="method-icon">💳</span>
+            <span class="method-label">Tarjetas</span>
+          </div>
+          <div class="method-item">
+            <span class="method-icon">🏦</span>
+            <span class="method-label">PSE</span>
+          </div>
+          <div class="method-item">
+            <span class="method-icon">💵</span>
+            <span class="method-label">Efectivo</span>
+          </div>
+          <div class="method-item">
+            <span class="method-icon">📱</span>
+            <span class="method-label">Nequi</span>
+          </div>
+        </div>
+
+        <!-- Pay Button -->
         <button
-          class="confirm-payment-btn"
-          :disabled="!selectedMethod || isProcessing"
+          class="pay-button"
+          :disabled="isProcessing"
           @click="processPayment"
         >
-          <span v-if="!isProcessing">Confirmar y Pagar</span>
+          <svg
+            v-if="!isProcessing"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+          </svg>
+          <span v-if="!isProcessing">Pagar {{ formatPrice(total) }}</span>
           <span v-else>Procesando...</span>
         </button>
       </div>
@@ -298,33 +196,44 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useCartStore } from "../stores/cart";
 import { orderService } from "../services/orderService";
+import { epaycoConfig } from "../config/epayco";
 
 const router = useRouter();
 const cartStore = useCartStore();
 
-const selectedMethod = ref("");
 const isProcessing = ref(false);
 const showSuccessModal = ref(false);
 const orderNumber = ref("");
 const customerData = ref({});
-const cardBrand = ref("");
 
-// Bancolombia payment data
-const bancolombiaData = ref({
-  cardType: "",
-  cardNumber: "",
-  cardName: "",
-  expiryDate: "",
-  cvv: "",
+// Tax calculations
+// El total es el precio de las camisetas (55.000 o 70.000)
+// Los impuestos están incluidos en ese precio
+const total = computed(() => {
+  return cartStore.cartItems.reduce((sum, item) => {
+    return sum + item.price * item.quantity;
+  }, 0);
 });
 
-// Nequi payment data
-const nequiData = ref({
-  phoneNumber: "",
+// Calculamos la base imponible (precio sin impuestos)
+// Total = Base + IVA(19%) + INC(8%)
+// Total = Base * (1 + 0.19 + 0.08) = Base * 1.27
+const subtotal = computed(() => {
+  return Math.round(total.value / 1.27);
+});
+
+// IVA del 19% sobre la base
+const iva = computed(() => {
+  return Math.round(subtotal.value * 0.19);
+});
+
+// INC del 8% sobre la base
+const inc = computed(() => {
+  return Math.round(subtotal.value * 0.08);
 });
 
 onMounted(() => {
@@ -341,6 +250,9 @@ onMounted(() => {
   if (cartStore.cartItems.length === 0) {
     router.push("/");
   }
+
+  // Load ePayco script
+  loadEpaycoScript();
 });
 
 const formatPrice = (price) => {
@@ -351,216 +263,129 @@ const formatPrice = (price) => {
   }).format(price);
 };
 
-const selectMethod = (method) => {
-  selectedMethod.value = method;
-};
-
 const goBack = () => {
   router.push("/checkout");
 };
 
-// Format card number with spaces
-const formatCardNumber = (event) => {
-  let value = event.target.value.replace(/\s/g, "");
-  value = value.replace(/\D/g, "");
+// Load ePayco script
+const loadEpaycoScript = () => {
+  if (window.ePayco) return;
 
-  // Add spaces every 4 digits
-  const formatted = value.match(/.{1,4}/g)?.join(" ") || value;
-  bancolombiaData.value.cardNumber = formatted;
-
-  // Detect card brand
-  if (value.startsWith("4")) {
-    cardBrand.value = "Visa";
-  } else if (value.startsWith("5")) {
-    cardBrand.value = "Mastercard";
-  } else if (value.startsWith("3")) {
-    cardBrand.value = "American Express";
-  } else {
-    cardBrand.value = "";
-  }
-};
-
-// Format expiry date MM/YY
-const formatExpiryDate = (event) => {
-  let value = event.target.value.replace(/\D/g, "");
-
-  if (value.length >= 2) {
-    value = value.slice(0, 2) + "/" + value.slice(2, 4);
-  }
-
-  bancolombiaData.value.expiryDate = value;
-};
-
-// Format CVV (only numbers)
-const formatCVV = (event) => {
-  bancolombiaData.value.cvv = event.target.value.replace(/\D/g, "");
-};
-
-// Format phone number
-const formatPhoneNumber = (event) => {
-  let value = event.target.value.replace(/\D/g, "");
-
-  // Format as XXX XXX XXXX
-  if (value.length >= 3) {
-    value = value.slice(0, 3) + " " + value.slice(3);
-  }
-  if (value.length >= 7) {
-    value = value.slice(0, 7) + " " + value.slice(7, 11);
-  }
-
-  nequiData.value.phoneNumber = value;
-};
-
-// Validate Bancolombia payment data
-const validateBancolombiaData = () => {
-  const { cardType, cardNumber, cardName, expiryDate, cvv } =
-    bancolombiaData.value;
-
-  if (!cardType) {
-    alert("Por favor selecciona el tipo de tarjeta");
-    return false;
-  }
-
-  const cleanCardNumber = cardNumber.replace(/\s/g, "");
-  if (cleanCardNumber.length < 15 || cleanCardNumber.length > 16) {
-    alert("Número de tarjeta inválido");
-    return false;
-  }
-
-  if (!cardName || cardName.trim().length < 3) {
-    alert("Por favor ingresa el nombre del titular");
-    return false;
-  }
-
-  if (expiryDate.length !== 5) {
-    alert("Fecha de vencimiento inválida (MM/AA)");
-    return false;
-  }
-
-  // Validate expiry date
-  const [month, year] = expiryDate.split("/");
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear() % 100;
-  const currentMonth = currentDate.getMonth() + 1;
-
-  if (parseInt(month) < 1 || parseInt(month) > 12) {
-    alert("Mes de vencimiento inválido");
-    return false;
-  }
-
-  if (
-    parseInt(year) < currentYear ||
-    (parseInt(year) === currentYear && parseInt(month) < currentMonth)
-  ) {
-    alert("La tarjeta está vencida");
-    return false;
-  }
-
-  if (cvv.length < 3 || cvv.length > 4) {
-    alert("CVV inválido");
-    return false;
-  }
-
-  return true;
-};
-
-// Validate Nequi payment data
-const validateNequiData = () => {
-  const cleanPhone = nequiData.value.phoneNumber.replace(/\s/g, "");
-
-  if (cleanPhone.length !== 10) {
-    alert("Número de celular inválido. Debe tener 10 dígitos");
-    return false;
-  }
-
-  if (!cleanPhone.startsWith("3")) {
-    alert("El número debe ser un celular colombiano (iniciar con 3)");
-    return false;
-  }
-
-  return true;
+  const script = document.createElement("script");
+  script.src = "https://checkout.epayco.co/checkout.js";
+  script.setAttribute("data-epayco-key", epaycoConfig.publicKey);
+  script.async = true;
+  document.head.appendChild(script);
 };
 
 const processPayment = async () => {
-  if (!selectedMethod.value) {
-    alert("Por favor selecciona un método de pago");
-    return;
-  }
-
-  // Validate payment data
-  if (selectedMethod.value === "bancolombia") {
-    if (!validateBancolombiaData()) {
-      return;
-    }
-  } else if (selectedMethod.value === "nequi") {
-    if (!validateNequiData()) {
-      return;
-    }
-  }
-
   isProcessing.value = true;
 
-  // Simulate payment processing
-  setTimeout(async () => {
-    try {
-      // Prepare payment details
-      let paymentDetails = {};
+  try {
+    // Prepare product description
+    const productDescription = cartStore.cartItems
+      .map((item) => `${item.name} (${item.size}) x${item.quantity}`)
+      .join(", ");
 
-      if (selectedMethod.value === "bancolombia") {
-        paymentDetails = {
-          method: "Bancolombia",
-          cardType: bancolombiaData.value.cardType,
-          cardNumber:
-            "****" +
-            bancolombiaData.value.cardNumber.replace(/\s/g, "").slice(-4),
-          cardHolder: bancolombiaData.value.cardName,
+    // Configure ePayco checkout
+    const handler = window.ePayco.checkout.configure({
+      key: epaycoConfig.publicKey,
+      test: epaycoConfig.test,
+    });
+
+    const data = {
+      // Información del comercio
+      name: epaycoConfig.merchantName,
+      description: productDescription,
+      invoice: orderNumber.value,
+      currency: epaycoConfig.currency,
+      amount: total.value.toString(),
+      tax_base: subtotal.value.toString(),
+      tax: (iva.value + inc.value).toString(),
+      country: epaycoConfig.country,
+      lang: epaycoConfig.lang,
+
+      // Información del cliente
+      external: "false",
+      name_billing: customerData.value.name,
+      address_billing: customerData.value.address,
+      type_doc_billing: "cc",
+      mobilephone_billing: customerData.value.phone,
+      number_doc_billing: "00000000", // Opcional: agregar campo de documento en checkout
+
+      // Información adicional
+      extra1: orderNumber.value,
+      extra2: customerData.value.email,
+      extra3: `IVA: ${iva.value}, INC: ${inc.value}`,
+
+      // Confirmación
+      confirmation: window.location.origin + "/api/epayco/confirmation",
+      response: window.location.origin + "/payment-response",
+
+      // Métodos de pago habilitados
+      methodsDisable: [], // Dejar vacío para habilitar todos los métodos
+    };
+
+    handler.open(data);
+
+    // Listener para respuesta de ePayco
+    window.addEventListener("message", async (event) => {
+      if (event.data.event === "epaycoClosed") {
+        isProcessing.value = false;
+      } else if (event.data.event === "epaycoSuccess") {
+        // Pago exitoso
+        const orderData = {
+          orderNumber: orderNumber.value,
+          customerName: customerData.value.name,
+          phone: customerData.value.phone,
+          email: customerData.value.email,
+          address: customerData.value.address,
+          notes: customerData.value.notes || "",
+          orderDate: new Date().toISOString(),
+          status: "Aprobado",
+          paymentMethod: "ePayco",
+          paymentDetails: {
+            method: "ePayco",
+            transactionId: event.data.data.x_transaction_id,
+            reference: event.data.data.x_ref_payco,
+          },
+          subtotal: subtotal.value,
+          iva: iva.value,
+          inc: inc.value,
+          total: total.value,
+          products: cartStore.cartItems.map((item) => ({
+            id: item.id,
+            name: item.name,
+            size: item.size,
+            price: item.price,
+            quantity: item.quantity,
+            subtotal: item.price * item.quantity,
+          })),
         };
-      } else if (selectedMethod.value === "nequi") {
-        paymentDetails = {
-          method: "Nequi",
-          phoneNumber: nequiData.value.phoneNumber,
-        };
+
+        // Save order to database
+        await orderService.createOrder(orderData);
+
+        // Clear cart and customer data
+        cartStore.clearCart();
+        localStorage.removeItem("sc-styleurban-customer");
+
+        // Show success modal
+        isProcessing.value = false;
+        showSuccessModal.value = true;
+      } else if (event.data.event === "epaycoError") {
+        // Error en el pago
+        alert(
+          "Hubo un error al procesar el pago. Por favor intenta nuevamente."
+        );
+        isProcessing.value = false;
       }
-
-      // Create order object
-      const orderData = {
-        orderNumber: orderNumber.value,
-        customerName: customerData.value.name,
-        phone: customerData.value.phone,
-        email: customerData.value.email,
-        address: customerData.value.address,
-        notes: customerData.value.notes || "",
-        orderDate: new Date().toISOString(),
-        status: "Aprobado",
-        paymentMethod: selectedMethod.value,
-        paymentDetails: paymentDetails,
-        total: cartStore.totalPrice,
-        products: cartStore.cartItems.map((item) => ({
-          id: item.id,
-          name: item.name,
-          size: item.size,
-          price: item.price,
-          quantity: item.quantity,
-          subtotal: item.price * item.quantity,
-        })),
-      };
-
-      // Save order to database
-      await orderService.createOrder(orderData);
-
-      // Clear cart and customer data
-      cartStore.clearCart();
-      localStorage.removeItem("sc-styleurban-customer");
-
-      // Show success modal
-      isProcessing.value = false;
-      showSuccessModal.value = true;
-    } catch (error) {
-      console.error("Error processing payment:", error);
-      alert("Hubo un error al procesar el pago. Por favor intenta nuevamente.");
-      isProcessing.value = false;
-    }
-  }, 2000);
+    });
+  } catch (error) {
+    console.error("Error processing payment:", error);
+    alert("Hubo un error al procesar el pago. Por favor intenta nuevamente.");
+    isProcessing.value = false;
+  }
 };
 
 const closeModal = () => {
@@ -701,13 +526,8 @@ const goToHome = () => {
   flex-shrink: 0;
 }
 
-.bancolombia-icon {
-  background: linear-gradient(135deg, #ffdd00 0%, #ffc700 100%);
-  color: #1a1a1a;
-}
-
-.nequi-icon {
-  background: linear-gradient(135deg, #ff006b 0%, #e6005f 100%);
+.epayco-icon {
+  background: linear-gradient(135deg, #00a8e8 0%, #0077b6 100%);
   color: #ffffff;
 }
 
@@ -877,78 +697,240 @@ const goToHome = () => {
   color: #1a1a1a;
 }
 
-.nequi-info {
+/* Purchase Summary Card (Black) */
+.purchase-summary-card {
+  background: #2c2c2c;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.summary-header {
   display: flex;
+  align-items: center;
   gap: 12px;
-  padding: 12px;
-  background: #fff3e0;
-  border-left: 4px solid #ff006b;
-  border-radius: 6px;
-  margin-top: 8px;
+  padding: 20px 24px;
+  background: #2c2c2c;
 }
 
-.nequi-info svg {
-  flex-shrink: 0;
-  color: #ff006b;
-}
-
-.nequi-info p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #666;
-  line-height: 1.5;
-}
-
-.details-text {
-  margin: 0 0 16px 0;
-  color: #666;
-  line-height: 1.6;
-}
-
-.payment-logos {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.logo-badge {
-  padding: 6px 12px;
-  background: #1a1a1a;
+.summary-header svg {
   color: #ffffff;
-  border-radius: 6px;
-  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.summary-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.summary-content {
+  padding: 0 24px 24px 24px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.info-row .label {
+  color: #9ca3af;
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+.info-row .value {
+  color: #ffffff;
+  font-size: 0.95rem;
   font-weight: 600;
 }
 
-.nequi-badge {
-  background: #ff006b;
+.divider {
+  height: 1px;
+  background: #444;
+  margin: 16px 0;
 }
 
-.confirm-payment-btn {
+.products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.product-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.product-name {
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.product-quantity {
+  color: #10b981;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.tax-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.tax-row .label {
+  color: #9ca3af;
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+.tax-row .value {
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.total-row .label {
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.total-row .value {
+  color: #10b981;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+/* Payment Method Card (White) */
+.payment-method-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.epayco-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.epayco-icon {
+  width: 56px;
+  height: 56px;
+  background: #10b981;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.epayco-icon svg {
+  color: #ffffff;
+}
+
+.epayco-info h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.15rem;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.epayco-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.method-item {
+  background: #f3f4f6;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.method-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.method-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+  text-align: center;
+}
+
+.pay-button {
   width: 100%;
-  padding: 18px;
-  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  padding: 18px 24px;
+  background: #10b981;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
+  border-radius: 14px;
   font-size: 1.2rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-.confirm-payment-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+.pay-button:hover:not(:disabled) {
+  background: #059669;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
 
-.confirm-payment-btn:disabled {
-  background: #ccc;
+.pay-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.pay-button:disabled {
+  background: #9ca3af;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
+}
+
+.pay-button svg {
+  flex-shrink: 0;
+}
+
+.pay-button span {
+  font-weight: 700;
 }
 
 /* Modal Styles */
@@ -1048,22 +1030,76 @@ const goToHome = () => {
   }
 }
 
-@media (max-width: 768px) {
+/* Responsive Design */
+
+/* Desktop */
+@media (min-width: 768px) {
+  .payment-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .payment-methods-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .payment-container {
+    padding: 16px;
+  }
+
   .payment-header h1 {
-    font-size: 2rem;
+    font-size: 1.5rem;
   }
 
-  .option-header {
-    gap: 12px;
+  .back-btn {
+    font-size: 0.9rem;
+    padding: 10px 16px;
   }
 
-  .option-icon {
-    width: 50px;
-    height: 50px;
+  .purchase-summary-card,
+  .payment-method-card {
+    border-radius: 16px;
   }
 
-  .option-info h3 {
+  .summary-header {
+    padding: 16px 20px;
+  }
+
+  .summary-header h2 {
+    font-size: 1.15rem;
+  }
+
+  .summary-content {
+    padding: 0 20px 20px 20px;
+  }
+
+  .total-row .value {
+    font-size: 1.4rem;
+  }
+
+  .payment-method-card {
+    padding: 20px;
+  }
+
+  .epayco-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .epayco-info h3 {
+    font-size: 1.05rem;
+  }
+
+  .epayco-info p {
+    font-size: 0.8rem;
+  }
+
+  .pay-button {
     font-size: 1.1rem;
+    padding: 16px 20px;
   }
 }
 </style>
