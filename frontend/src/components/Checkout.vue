@@ -136,9 +136,11 @@
 import { reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useCartStore } from "../stores/cart";
+import { useAuthStore } from "../stores/auth";
 
 const router = useRouter();
 const cartStore = useCartStore();
+const authStore = useAuthStore();
 
 const customerData = reactive({
   name: "",
@@ -150,14 +152,25 @@ const customerData = reactive({
 
 // Cargar datos guardados al montar el componente
 onMounted(() => {
-  const savedCustomer = localStorage.getItem("sc-styleurban-customer");
-  if (savedCustomer) {
-    const data = JSON.parse(savedCustomer);
-    customerData.name = data.name || "";
-    customerData.phone = data.phone || "";
-    customerData.email = data.email || "";
-    customerData.address = data.address || "";
-    customerData.notes = data.notes || "";
+  // Prioridad 1: Cargar datos del usuario autenticado
+  if (authStore.isAuthenticated && authStore.user) {
+    customerData.name = authStore.user.name || "";
+    customerData.phone = authStore.user.phone || "";
+    customerData.email = authStore.user.email || "";
+    customerData.address = authStore.user.address || "";
+    customerData.notes = "";
+  }
+  // Prioridad 2: Cargar datos guardados en localStorage (si no hay usuario autenticado)
+  else {
+    const savedCustomer = localStorage.getItem("sc-styleurban-customer");
+    if (savedCustomer) {
+      const data = JSON.parse(savedCustomer);
+      customerData.name = data.name || "";
+      customerData.phone = data.phone || "";
+      customerData.email = data.email || "";
+      customerData.address = data.address || "";
+      customerData.notes = data.notes || "";
+    }
   }
 });
 
@@ -208,9 +221,25 @@ const goBack = () => {
   router.push("/");
 };
 
-const proceedToPayment = () => {
+const proceedToPayment = async () => {
   // Save customer data to localStorage
   localStorage.setItem("sc-styleurban-customer", JSON.stringify(customerData));
+
+  // Si el usuario está autenticado, actualizar su perfil
+  if (authStore.isAuthenticated && authStore.user) {
+    try {
+      await authStore.updateProfile({
+        name: customerData.name,
+        phone: customerData.phone,
+        email: customerData.email,
+        address: customerData.address,
+      });
+    } catch (error) {
+      console.error("Error al actualizar perfil:", error);
+      // Continuar al pago aunque falle la actualización del perfil
+    }
+  }
+
   router.push("/payment");
 };
 </script>

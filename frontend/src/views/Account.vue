@@ -272,6 +272,20 @@ const cancelEditProfile = () => {
 const saveProfile = async () => {
   try {
     await authStore.updateProfile(editForm.value);
+
+    // Actualizar también el localStorage de customer data para que se refleje en checkout
+    const customerData = {
+      name: editForm.value.name,
+      phone: editForm.value.phone,
+      email: authStore.user.email,
+      address: editForm.value.address,
+      notes: "",
+    };
+    localStorage.setItem(
+      "sc-styleurban-customer",
+      JSON.stringify(customerData)
+    );
+
     isEditingProfile.value = false;
   } catch (error) {
     alert("Error al actualizar el perfil: " + error.message);
