@@ -52,6 +52,33 @@
             <span class="value">{{ customerData.name }}</span>
           </div>
 
+          <!-- Address Section -->
+          <div class="address-section">
+            <div class="address-header">
+              <span class="label">Dirección de Envío</span>
+              <button class="edit-btn" @click="goToCheckout">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                  ></path>
+                  <path
+                    d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                  ></path>
+                </svg>
+                Editar
+              </button>
+            </div>
+            <p class="address-text">{{ customerData.address }}</p>
+          </div>
+
           <!-- Divider -->
           <div class="divider"></div>
 
@@ -199,11 +226,13 @@
 import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useCartStore } from "../stores/cart";
+import { useAuthStore } from "../stores/auth";
 import { orderService } from "../services/orderService";
 import { epaycoConfig } from "../config/epayco";
 
 const router = useRouter();
 const cartStore = useCartStore();
+const authStore = useAuthStore();
 
 const isProcessing = ref(false);
 const showSuccessModal = ref(false);
@@ -267,66 +296,74 @@ const goBack = () => {
   router.push("/checkout");
 };
 
+const goToCheckout = () => {
+  router.push("/checkout");
+};
+
 // Load ePayco script
 const loadEpaycoScript = () => {
-  if (window.ePayco) return;
+  return new Promise((resolve, reject) => {
+    // Check if already loaded
+    if (window.ePayco) {
+      resolve();
+      return;
+    }
 
-  const script = document.createElement("script");
-  script.src = "https://checkout.epayco.co/checkout.js";
-  script.setAttribute("data-epayco-key", epaycoConfig.publicKey);
-  script.async = true;
-  document.head.appendChild(script);
+    const script = document.createElement("script");
+    script.src = "https://checkout.epayco.co/checkout.js";
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Failed to load ePayco script"));
+    document.head.appendChild(script);
+  });
 };
 
 const processPayment = async () => {
   isProcessing.value = true;
 
   try {
+    // Ensure ePayco script is loaded
+    await loadEpaycoScript();
+
+    // Wait a bit more to ensure ePayco is fully initialized
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Check if ePayco is available
+    if (!window.ePayco) {
+      throw new Error("ePayco no está disponible");
+    }
+
     // Prepare product description
     const productDescription = cartStore.cartItems
       .map((item) => `${item.name} (${item.size}) x${item.quantity}`)
       .join(", ");
 
-    // Configure ePayco checkout
+    // Configure ePayco handler
     const handler = window.ePayco.checkout.configure({
-      key: epaycoConfig.publicKey,
-      test: epaycoConfig.test,
+      key: "075441afc9f981a98531c8a15358c155",
+      test: false,
     });
 
+    // Prepare payment data
     const data = {
-      // Información del comercio
-      name: epaycoConfig.merchantName,
+      name: productDescription,
       description: productDescription,
       invoice: orderNumber.value,
-      currency: epaycoConfig.currency,
+      currency: "cop",
       amount: total.value.toString(),
       tax_base: subtotal.value.toString(),
-      tax: (iva.value + inc.value).toString(),
-      country: epaycoConfig.country,
-      lang: epaycoConfig.lang,
-
-      // Información del cliente
+      tax: iva.value.toString(),
+      tax_ico: inc.value.toString(),
+      country: "co",
+      lang: "es",
       external: "false",
-      name_billing: customerData.value.name,
-      address_billing: customerData.value.address,
-      type_doc_billing: "cc",
-      mobilephone_billing: customerData.value.phone,
-      number_doc_billing: "00000000", // Opcional: agregar campo de documento en checkout
-
-      // Información adicional
-      extra1: orderNumber.value,
-      extra2: customerData.value.email,
-      extra3: `IVA: ${iva.value}, INC: ${inc.value}`,
-
-      // Confirmación
-      confirmation: window.location.origin + "/api/epayco/confirmation",
-      response: window.location.origin + "/payment-response",
-
-      // Métodos de pago habilitados
-      methodsDisable: [], // Dejar vacío para habilitar todos los métodos
+      response: "",
+      confirmation: "",
     };
 
+    // Open ePayco checkout
     handler.open(data);
+    isProcessing.value = false;
 
     // Listener para respuesta de ePayco
     window.addEventListener("message", async (event) => {
@@ -365,6 +402,11 @@ const processPayment = async () => {
 
         // Save order to database
         await orderService.createOrder(orderData);
+
+        // If user is authenticated, save order to their account
+        if (authStore.isAuthenticated) {
+          await authStore.addOrder(orderData);
+        }
 
         // Clear cart and customer data
         cartStore.clearCart();
@@ -747,6 +789,60 @@ const goToHome = () => {
   color: #ffffff;
   font-size: 0.95rem;
   font-weight: 600;
+}
+
+.address-section {
+  padding: 14px 0;
+}
+
+.address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.address-header .label {
+  color: #9ca3af;
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+.edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.edit-btn svg {
+  color: #ffffff;
+}
+
+.address-text {
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.5;
+  margin: 0;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .divider {
