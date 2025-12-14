@@ -4,7 +4,7 @@
     <header class="header">
       <div class="header-content">
         <div class="logo">
-          <h1>StyleUrban</h1>
+          <h1>Home Style</h1>
         </div>
         <div class="header-actions">
           <!-- Categories Menu -->
@@ -240,7 +240,7 @@
     <footer class="footer">
       <div class="footer-content">
         <div class="footer-section">
-          <h3>StyleUrban</h3>
+          <h3>HomeStyle</h3>
           <p>Moda urbana de calidad</p>
         </div>
         <div class="footer-section">
@@ -320,28 +320,28 @@ const estampadasProducts = ref([
     id: 1,
     name: "Estampada Classic S",
     size: "S",
-    price: 55000,
+    price: 60000,
     image: "/camiseta.png",
   },
   {
     id: 2,
     name: "Estampada Urban S",
     size: "S",
-    price: 55000,
+    price: 60000,
     image: "/camiseta.png",
   },
   {
     id: 3,
     name: "Estampada Style S",
     size: "S",
-    price: 55000,
+    price: 60000,
     image: "/camiseta.png",
   },
   {
     id: 4,
     name: "Estampada Modern S",
     size: "S",
-    price: 55000,
+    price: 60000,
     image: "/camiseta.png",
   },
 
@@ -349,28 +349,28 @@ const estampadasProducts = ref([
     id: 5,
     name: "Estampada Classic M",
     size: "M",
-    price: 55000,
+    price: 60000,
     image: "/camiseta.png",
   },
   {
     id: 6,
     name: "Estampada Urban M",
     size: "M",
-    price: 55000,
+    price: 60000,
     image: "/camiseta.png",
   },
   {
     id: 7,
     name: "Estampada Style M",
     size: "M",
-    price: 55000,
+    price: 60000,
     image: "/camiseta.png",
   },
   {
     id: 8,
     name: "Estampada Modern M",
     size: "M",
-    price: 55000,
+    price: 60000,
     image: "/camiseta.png",
   },
 
@@ -378,28 +378,28 @@ const estampadasProducts = ref([
     id: 9,
     name: "Estampada Classic L",
     size: "L",
-    price: 55000,
+    price: 60000,
     image: "/camiseta.png",
   },
   {
     id: 10,
     name: "Estampada Urban L",
     size: "L",
-    price: 55000,
+    price: 60000,
     image: "/camiseta.png",
   },
   {
     id: 11,
     name: "Estampada Style L",
     size: "L",
-    price: 55000,
+    price: 60000,
     image: "/camiseta.png",
   },
   {
     id: 12,
     name: "Estampada Modern L",
     size: "L",
-    price: 55000,
+    price: 60000,
     image: "/camiseta.png",
   },
 ]);
