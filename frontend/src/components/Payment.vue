@@ -384,9 +384,21 @@ const processPayment = async () => {
 
     // Listener para respuesta de ePayco
     window.addEventListener("message", async (event) => {
+      // ========== LOG COMPLETO DE RESPUESTA EPAYCO ==========
+      console.log("========== RESPUESTA EPAYCO ==========");
+      console.log("Evento completo:", event);
+      console.log("event.data:", event.data);
+      console.log("event.data.event:", event.data?.event);
+      console.log("event.data.data:", event.data?.data);
+      console.log("JSON completo:", JSON.stringify(event.data, null, 2));
+      console.log("=======================================");
+      // ======================================================
+
       if (event.data.event === "epaycoClosed") {
+        console.log(">>> ePayco cerrado por el usuario");
         isProcessing.value = false;
       } else if (event.data.event === "epaycoSuccess") {
+        console.log(">>> PAGO EXITOSO - Datos:", event.data.data);
         // Pago exitoso
         const orderData = {
           orderNumber: orderNumber.value,
@@ -437,6 +449,8 @@ const processPayment = async () => {
         showSuccessModal.value = true;
       } else if (event.data.event === "epaycoError") {
         // Error en el pago
+        console.log(">>> PAGO RECHAZADO/ERROR - Datos:", event.data);
+        console.log("Razón del error:", event.data?.data);
         alert(
           "Hubo un error al procesar el pago. Por favor intenta nuevamente."
         );
