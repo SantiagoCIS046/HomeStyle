@@ -214,8 +214,24 @@
           Tu pedido <strong>{{ orderNumber }}</strong> ha sido registrado.
         </p>
         <p class="modal-message">
-          Recibirás un correo de confirmación en breve.
+          Hemos notificado a nuestro equipo sobre tu pedido.
         </p>
+        <div class="notification-info">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+            ></path>
+          </svg>
+          <span>Notificación enviada al administrador</span>
+        </div>
         <button class="modal-btn" @click="goToHome">Volver al Inicio</button>
       </div>
     </div>
@@ -229,6 +245,7 @@ import { useCartStore } from "../stores/cart";
 import { useAuthStore } from "../stores/auth";
 import { orderService } from "../services/orderService";
 import { epaycoConfig } from "../config/epayco";
+import { notificationService } from "../services/notificationService";
 
 const router = useRouter();
 const cartStore = useCartStore();
@@ -407,6 +424,9 @@ const processPayment = async () => {
         if (authStore.isAuthenticated) {
           await authStore.addOrder(orderData);
         }
+
+        // Enviar notificación al administrador por WhatsApp
+        notificationService.sendOrderNotificationToAdmin(orderData);
 
         // Clear cart and customer data
         cartStore.clearCart();
@@ -1083,7 +1103,30 @@ const goToHome = () => {
 }
 
 .modal-message {
-  margin-bottom: 24px !important;
+  margin-bottom: 16px !important;
+}
+
+.notification-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: #e8f5e9;
+  border: 1px solid #27ae60;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.notification-info svg {
+  color: #27ae60;
+  flex-shrink: 0;
+}
+
+.notification-info span {
+  color: #1b5e20;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .modal-btn {
