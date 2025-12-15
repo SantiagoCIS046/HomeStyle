@@ -530,28 +530,11 @@ const estampadasProducts = ref([
     price: 60000,
     images: [
       new URL(
-        "../img/Camiseta Estampada, color rojo, Talla M..jpeg",
-        import.meta.url
-      ).href,
-      new URL(
         "../img/Camiseta Estampada, color rojo, Talla M.jpeg",
         import.meta.url
       ).href,
-    ],
-  },
-  {
-    id: 9,
-    name: "Camiseta Estampada Gris Claro",
-    color: "Gris Claro",
-    size: "M",
-    price: 60000,
-    images: [
       new URL(
-        "../img/Camiseta Estampada, Gris Claro, Talla M.jpeg",
-        import.meta.url
-      ).href,
-      new URL(
-        "../img/Camiseta Estampada, Gris Claro, Talla M.jpeg",
+        "../img/Camiseta Estampada, color rojo, Talla M..jpeg",
         import.meta.url
       ).href,
     ],
@@ -559,7 +542,7 @@ const estampadasProducts = ref([
 
   // Talla L
   {
-    id: 10,
+    id: 9,
     name: "Camiseta Estampada Hueso",
     color: "Hueso",
     size: "L",
@@ -574,7 +557,7 @@ const estampadasProducts = ref([
     ],
   },
   {
-    id: 11,
+    id: 10,
     name: "Camiseta Estampada Negra",
     color: "Negro",
     size: "L",
@@ -589,7 +572,7 @@ const estampadasProducts = ref([
     ],
   },
   {
-    id: 12,
+    id: 11,
     name: "Camiseta Estampada Verde Militar",
     color: "Verde Militar",
     size: "L",
@@ -610,18 +593,18 @@ const estampadasProducts = ref([
 // Camisetas Oversize - 6 camisetas en talla M
 const oversizeProducts = ref([
   {
-    id: 13,
+    id: 12,
     name: "Camiseta Oversize Blanca",
     color: "Blanco",
     size: "M",
     price: 70000,
     images: [
       new URL("../img/Overzise-Blanca,Talla M.jpeg", import.meta.url).href,
-      new URL("../img/Overzise-Blanca,Talla M..jpeg", import.meta.url).href,
+      new URL("../img/Overzise-Blanco,Talla M..jpeg", import.meta.url).href,
     ],
   },
   {
-    id: 14,
+    id: 13,
     name: "Camiseta Oversize Gris",
     color: "Gris",
     size: "M",
@@ -632,7 +615,7 @@ const oversizeProducts = ref([
     ],
   },
   {
-    id: 15,
+    id: 14,
     name: "Camiseta Oversize Marrón Claro",
     color: "Marrón Claro",
     size: "M",
@@ -645,7 +628,7 @@ const oversizeProducts = ref([
     ],
   },
   {
-    id: 16,
+    id: 15,
     name: "Camiseta Oversize Marrón",
     color: "Marrón",
     size: "M",
@@ -656,7 +639,7 @@ const oversizeProducts = ref([
     ],
   },
   {
-    id: 17,
+    id: 16,
     name: "Camiseta Oversize Negra",
     color: "Negro",
     size: "M",
@@ -667,7 +650,7 @@ const oversizeProducts = ref([
     ],
   },
   {
-    id: 18,
+    id: 17,
     name: "Camiseta Oversize Negra",
     color: "Negro",
     size: "M",
